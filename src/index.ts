@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import userRoutes from './routes/userRoutes';
 import productRoutes from './routes/productRoutes';
+import cartRoutes from './routes/cartRoutes';
+import orderRoutes from './routes/orderRoutes';
 import RedisStore from 'connect-redis';
 import client from './services/cacheService';
 import session from 'express-session';
@@ -31,6 +33,8 @@ app.use(
 
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/carts', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
