@@ -92,3 +92,18 @@ export const updateProductPriceController = async(req: Request, res: Response) =
         res.status(400).json({ error: error.message });
     }
 }
+
+export const searchProductController = async(req: Request, res: Response) => {
+    try {
+        const { query } = req.params;
+        const products = await productService.searchProduct(query);
+
+        if (products.length) {
+            res.status(200).json(products);
+        } else {
+            res.status(404).json({ error: "No products found" });
+        }
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+}
