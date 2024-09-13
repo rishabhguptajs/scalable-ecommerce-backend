@@ -34,3 +34,5 @@ const sendWhatsappMessage = async(to: string, message: string) => {
         throw new Error(`Error sending WhatsApp message: ${error.message}`)
     }
 }
+
+export { sendSMS, sendWhatsappMessage }
