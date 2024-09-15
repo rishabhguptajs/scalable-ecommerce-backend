@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoutes';
 import productRoutes from './routes/productRoutes';
 import cartRoutes from './routes/cartRoutes';
 import orderRoutes from './routes/orderRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import RedisStore from 'connect-redis';
 import client from './services/cacheService';
 import session from 'express-session';
@@ -46,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
