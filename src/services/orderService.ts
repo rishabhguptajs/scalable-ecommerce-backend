@@ -1,5 +1,4 @@
 import Order from "../models/orderModel";
-import { IOrder } from "../interfaces/orderInterface";
 import mongoose from "mongoose";
 
 interface addOrderParams {

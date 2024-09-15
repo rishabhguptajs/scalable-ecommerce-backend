@@ -8,14 +8,25 @@ import orderRoutes from './routes/orderRoutes';
 import RedisStore from 'connect-redis';
 import client from './services/cacheService';
 import session from 'express-session';
+import morgan from 'morgan';
+import { rateLimit } from 'express-rate-limit'
 
 dotenv.config();
 
 const app = express();
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 50,
+    message: 'Too many requests from this IP, please try again after an hour',
+    legacyHeaders: true,
+    statusCode: 429,
+})
 
 connectDB();
 
 app.use(express.json());
+app.use(limiter);
+app.use(morgan('common'));
 
 app.use(
     session({
