@@ -80,3 +80,19 @@ export const resetPassword = async (email: string, newPassword: string) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10)
   return await User.findOneAndUpdate({ email }, { password: hashedPassword })
 }
+
+export const generatePasswordResetToken = async(email: string) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
+      expiresIn: "1h",
+    });
+
+    await setCache(`passwordResetToken:${user._id}`, token, 3600);
+
+    return token;
+}
