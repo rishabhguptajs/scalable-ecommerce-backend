@@ -3,22 +3,36 @@ import Order from '../models/orderModel';
 import { Request, Response } from 'express';
 import mongoose, { mongo } from 'mongoose';
 import { addOrder, deleteOrder, getOrderById, getOrders, updateOrderStatus } from '../services/orderService';
+import { createCheckoutSession } from '../services/paymentService';
 
-export const createOrder = async(req: Request, res: Response) => {
+export const createOrder = async (req: Request, res: Response) => {
     try {
-        const { user: userId, items, totalAmount, status } = req.body as IOrder;
+        const { user: userId, items, totalAmount } = req.body as IOrder;
 
-        if(!mongoose.Types.ObjectId.isValid(userId)){
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ error: "Invalid userId" });
         }
 
         const order = await addOrder({
-            user: userId, items, totalAmount, status
-        })
+            user: userId,
+            items,
+            totalAmount,
+            status: "pending",
+        });
 
-        res.status(200).json(order);
+        const CHECKOUT_SESSION_ID = order._id;
+
+        const successUrl = `${process.env.FRONTEND_URL}/payment-success?session_id=${CHECKOUT_SESSION_ID}`; 
+        const cancelUrl = `${process.env.FRONTEND_URL}/payment-cancel`;
+
+        const session = await createCheckoutSession(totalAmount, 'usd', successUrl, cancelUrl);
+
+        res.status(200).json({
+            order,
+            checkoutUrl: session.url,
+        });
     } catch (error: any) {
-        res.status(401).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 }
 

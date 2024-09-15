@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import * as userService from '../services/userService'
+import { sendPasswordResetEmail, sendRegisterSuccessfulEmail } from "../services/mailService";
 
 export const registerUser = async(req: Request, res: Response) => {
     try {
         const { email, password, name } = req.body;
         const user = await userService.registerUser({ email, password, name });
+
+        await sendRegisterSuccessfulEmail(email);
 
         res.status(201).json({
             message: "User registered successfully",
@@ -67,7 +70,11 @@ export const resetPassword = async(req: Request, res: Response) =>  {
     try {
         const { email, newPassword } = req.body;
 
-        await userService.resetPassword(email, newPassword);
+        const token = await userService.generatePasswordResetToken(email);
+
+        const response = await sendPasswordResetEmail(email, token);
+
+        res.status(201).json(response);
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }
